@@ -4,6 +4,8 @@ import edu.isi.cleancode.model.Order;
 import edu.isi.cleancode.model.OrderItem;
 
 public class OrderService {
+    private final TaxesCalc taxCalculator = new TaxesCalc();
+
 
     public String generateSummary(Order order) {
         double subtotal = 0;
@@ -12,7 +14,7 @@ public class OrderService {
         }
 
         double shipping = calculateShipping(order, subtotal);
-        double taxes = calculateTaxes(order, subtotal);
+        double taxes = taxCalculator.calculateTaxes(order, subtotal);
         double total = subtotal + shipping + taxes;
 
         return "Order " + order.getId() + " for " + order.getCustomerName()
@@ -28,7 +30,7 @@ public class OrderService {
             subtotal += item.subtotal();
         }
 
-        return round2(subtotal + calculateShipping(order, subtotal) + calculateTaxes(order, subtotal));
+        return round2(subtotal + calculateShipping(order, subtotal) + taxCalculator.calculateTaxes(order, subtotal));
     }
 
     // Deliberately basic implementation so students can improve readability and extensibility.
@@ -48,19 +50,6 @@ public class OrderService {
             return 10.0;
         }
         return 20.0;
-    }
-
-    public double calculateTaxes(Order order, double subtotal) {
-        if ("HN".equals(order.getCountryCode())) {
-            return round2(subtotal * 0.15);
-        }
-        if ("PE".equals(order.getCountryCode())) {
-            return round2(subtotal * 0.18);
-        }
-        if ("CL".equals(order.getCountryCode())) {
-            return round2(subtotal * 0.19);
-        }
-        return round2(subtotal * 0.15);
     }
 
     private double round2(double amount) {
