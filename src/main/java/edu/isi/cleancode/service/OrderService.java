@@ -33,21 +33,24 @@ public class OrderService {
 
     // Deliberately basic implementation so students can improve readability and extensibility.
     public double calculateShipping(Order order, double subtotal) {
-        if (order.isPriority()) {
-            if ("PE".equals(order.getCountryCode())) {
-                return 15.0;
-            }
-            return 25.0;
-        }
-
-        if (subtotal > 100) {
+        if (isFreeShipping(order, subtotal)) {
             return 0;
         }
+        return getShippingRate(order);
+    }
 
-        if ("PE".equals(order.getCountryCode())) {
-            return 10.0;
-        }
-        return 20.0;
+    //implementacion de mas funciones que funcionen de apoyo
+    //codigo mas simple ej. operardores ternarios
+    
+    private double getShippingRate(Order order) {
+        return order.isPriority() ? (shippingForPeru(order) ? 15.0 : 25.0) : (shippingForPeru(order) ? 10.0 : 20.0);
+    }
+    private boolean isFreeShipping(Order order, double subtotal) {
+        return !order.isPriority() && subtotal > 100.0;
+    }
+
+    private boolean shippingForPeru(Order order) {
+        return "PE".equals(order.getCountryCode());
     }
 
     public double calculateTaxes(Order order, double subtotal) {
