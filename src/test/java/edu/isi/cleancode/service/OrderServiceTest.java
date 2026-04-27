@@ -27,7 +27,7 @@ class OrderServiceTest {
 
         double total = service.calculateTotal(order);
 
-        assertEquals(236.0, total);
+        assertEquals(102.0, total);
     }
 
     @Test
@@ -39,4 +39,38 @@ class OrderServiceTest {
 
         assertEquals(135.0, total);
     }
+
+    //CASO FRONTERA PAIS NO CONOCIDO
+    @Test
+    void calculateTotal_forUnknownCountry_shouldUseDefaultTax() {
+        Order order = new Order("ORD-4", "Abraham Reyes", "IN", false);
+        order.addItem(new OrderItem("KIT", 1, 200));
+
+        double total = service.calculateTotal(order);
+
+        assertEquals(230.0, total);
+    }
+
+    //CASO FRONTERA EXACTO LIMITE ENVIO GRATIS
+    @Test
+    void calculateTotal_forExactFreeShippingThreshold_shouldHaveFreeShipping() {
+        Order order = new Order("ORD-5", "vanessa Rodiguez", "PE", false);
+        order.addItem(new OrderItem("KIT", 1, 200)); 
+
+        double total = service.calculateTotal(order);
+
+        assertEquals(236.0, total); 
+    }
+
+    //CASO FRONTERA PRIORITY EN PAIS CON ENVIO PRIORITARIO
+    void calculateTotal_forInternationalPriorityOrder_shouldUseHigherShipping() {
+        Order order = new Order("ORD-6", "Tommy Morales", "US", true);
+        order.addItem(new OrderItem("KIT", 1, 200));
+
+        double total = service.calculateTotal(order);
+
+        assertEquals(250.0, total);
+    }
+
+
 }
